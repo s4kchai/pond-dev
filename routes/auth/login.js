@@ -1,10 +1,18 @@
 const db = require('../db')
 
+async function login(username,password){
+    const [result,fields] = await db.query('SELECT * FROM users WHERE username = ? AND password = ?', [username,password])
+    return result.length > 0?  result[0] : {};
+}
+
+
+
 module.exports = async (req,res,next)=>{
     try{
-        const [result,_] = await db.query('SELECT * FROM users')
-        res.status(200).json({success : true, data : result})
+    const {username, password} = req.body;
+    const isLoginSuccess = await login(username, password);
+    res.status(200)
     }catch(err){
-        res.status(200).json({success : false, msg:err.message})
+        res.json({success : false, msg:err})
     }
 }
